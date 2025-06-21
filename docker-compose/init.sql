@@ -1,0 +1,131 @@
+CREATE DATABASE 'product_catalog';
+
+USE 'product_catalog';
+
+CREATE TABLE business_group (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE categories (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE combo_names (
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(36) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  nickname VARCHAR(255) DEFAULT NULL,
+  is_available BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE recurrences (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE combos (
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(36) NOT NULL UNIQUE,
+  combo_name_id INT NOT NULL,
+  description VARCHAR(1000) DEFAULT NULL,
+  price DOUBLE PRECISION NOT NULL,
+  renewable_balance DOUBLE PRECISION NOT NULL DEFAULT 0,
+  maximum_negative_balance DOUBLE PRECISION NOT NULL DEFAULT 0,
+  recurrence_id INT NOT NULL,
+  active BOOLEAN DEFAULT TRUE,
+  renewable BOOLEAN DEFAULT FALSE,
+  discount DOUBLE PRECISION DEFAULT 0,
+  salable BOOLEAN NOT NULL DEFAULT FALSE,
+  recommended BOOLEAN NOT NULL DEFAULT FALSE,
+  slug VARCHAR(100) DEFAULT NULL,
+  start_date TIMESTAMP NOT NULL,
+  end_date TIMESTAMP DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  full_price DOUBLE PRECISION DEFAULT NULL,
+  external_ref JSONB DEFAULT NULL,
+  business_group_id BIGINT DEFAULT NULL,
+  loyal BOOLEAN NOT NULL DEFAULT FALSE,
+  FOREIGN KEY (combo_name_id) REFERENCES combo_names(id) ON DELETE CASCADE,
+  FOREIGN KEY (recurrence_id) REFERENCES recurrences(id) ON DELETE CASCADE,
+  FOREIGN KEY (business_group_id) REFERENCES business_group(id)
+);
+
+CREATE TABLE product_types (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE product_configs (
+  id SERIAL PRIMARY KEY,
+  description VARCHAR(255) DEFAULT NULL,
+  tooltip VARCHAR(255) DEFAULT NULL,
+  description_extra VARCHAR(255) DEFAULT NULL,
+  product_type_id INT DEFAULT NULL,
+  renewable BOOLEAN DEFAULT FALSE,
+  restriction_quantity INT DEFAULT NULL,
+  max_limit_view INT DEFAULT 0,
+  max_limit_view_multiplier INT DEFAULT 0,
+  max_limit INT NOT NULL DEFAULT 0,
+  allow_extra BOOLEAN DEFAULT FALSE,
+  extra_price DOUBLE PRECISION DEFAULT NULL,
+  full_price DOUBLE PRECISION DEFAULT NULL,
+  price_discount DOUBLE PRECISION DEFAULT NULL,
+  trial_eligible BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_type_id) REFERENCES product_types(id)
+);
+
+CREATE TABLE restriction_types (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(36) NOT NULL UNIQUE,
+  name VARCHAR(255) NOT NULL,
+  subtitle VARCHAR(255) DEFAULT NULL,
+  slug VARCHAR(255) NOT NULL,
+  category_id INT NOT NULL,
+  restriction_type_id INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  icon VARCHAR(255) DEFAULT NULL,
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+  FOREIGN KEY (restriction_type_id) REFERENCES restriction_types(id) ON DELETE CASCADE
+);
+
+CREATE TABLE product_combo (
+  id SERIAL PRIMARY KEY,
+  product_id INT NOT NULL,
+  product_config_id INT NOT NULL,
+  combo_id INT NOT NULL,
+  FOREIGN KEY (combo_id) REFERENCES combos(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_config_id) REFERENCES product_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE ranges (
+  id BIGSERIAL PRIMARY KEY,
+  price DOUBLE PRECISION NOT NULL,
+  amount DOUBLE PRECISION NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ranges_product_configs (
+  id BIGSERIAL PRIMARY KEY,
+  range_id BIGINT NOT NULL,
+  product_config_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (range_id) REFERENCES ranges(id),
+  FOREIGN KEY (product_config_id) REFERENCES product_configs(id)
+);
