@@ -1,10 +1,11 @@
 package entity
 
 type ComboName struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Nickname    string `json:"nickname"`
-	IsAvailable bool   `json:"is_available"`
+	ID            int64  `json:"id"`
+	Name          string `json:"name"`
+	ComboNameUuid string `json:"combo_name_uuid"`
+	Nickname      string `json:"nickname"`
+	IsAvailable   bool   `json:"is_available"`
 }
 
 // Enable ativa o combo

@@ -47,7 +47,7 @@ func (s *WebServer) Start() {
 
 	for path, handler := range s.Handlers {
 		s.Router.Mount(path, handler)
-		log.Printf("✅ Route mounted: %s", path)
+		log.Printf("Route mounted: %s", path)
 	}
 
 	log.Printf("Server running on port %s", s.WebServerPort)
