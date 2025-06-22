@@ -17,3 +17,7 @@ func NewComboNameService(r comboname.Repository) *ComboNameService {
 func (s *ComboNameService) GetByID(ctx context.Context, id int64) (*comboname.ComboName, error) {
 	return s.repo.GetByID(ctx, id)
 }
+
+func (uc *ComboNameService) GetAll(ctx context.Context, page, limit int) ([]comboname.ComboName, int64, error) {
+	return uc.repo.GetAll(ctx, page, limit)
+}
