@@ -1,6 +1,6 @@
 CREATE DATABASE 'product_catalog';
 
-USE 'product_catalog';
+USE 'catalog';
 
 CREATE TABLE business_group (
   id BIGSERIAL PRIMARY KEY,

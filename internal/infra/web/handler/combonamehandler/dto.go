@@ -14,3 +14,19 @@ type PaginatedComboNameResponse struct {
 	Limit      int                 `json:"limit"`
 	TotalItems int64               `json:"total_items"`
 }
+
+type UpdateComboNameRequest struct {
+	Name        string `json:"name"`
+	Nickname    string `json:"nickname"`
+	IsAvailable bool   `json:"is_available"`
+}
+
+type CreateComboNameRequest struct {
+	Name        string `json:"name"`
+	Nickname    string `json:"nickname"`
+	IsAvailable bool   `json:"is_available"`
+}
+
+type CreateComboNameResponse struct {
+	ID int64 `json:"id"`
+}

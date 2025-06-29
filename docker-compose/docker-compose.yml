@@ -1,5 +1,8 @@
+version: '3.8'
+
 services:
   ordersystem:
+    container_name: catalogo
     build:
       context: ..
       dockerfile: docker-compose/Dockerfile
@@ -7,20 +10,9 @@ services:
       - "8080:8080"
     env_file:
       - ../cmd/ordersystem/.env
-    depends_on:
-      - db
+    networks:
+      - rede_interna
 
-  db:
-    image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: product_catalog
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
+networks:
+  rede_interna:
+    external: true

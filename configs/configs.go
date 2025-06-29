@@ -16,6 +16,10 @@ type Config struct {
 	WebServerPort     string `mapstructure:"WEB_SERVER_PORT"`
 	GRPCServerPort    string `mapstructure:"GRPC_SERVER_PORT"`
 	GraphQLServerPort string `mapstructure:"GRAPHQL_SERVER_PORT"`
+	RedisHost         string `mapstructure:"REDIS_HOST"`
+	RedisPort         string `mapstructure:"REDIS_PORT"`
+	RedisPassword     string `mapstructure:"REDIS_PASSWORD"`
+	RedisDB           int    `mapstructure:"REDIS_DB"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -31,6 +35,10 @@ func LoadConfig() (*Config, error) {
 		WebServerPort:     viper.GetString("WEB_SERVER_PORT"),
 		GRPCServerPort:    viper.GetString("GRPC_SERVER_PORT"),
 		GraphQLServerPort: viper.GetString("GRAPHQL_SERVER_PORT"),
+		RedisHost:         viper.GetString("REDIS_HOST"),
+		RedisPort:         viper.GetString("REDIS_PORT"),
+		RedisPassword:     viper.GetString("REDIS_PASSWORD"),
+		RedisDB:           viper.GetInt("REDIS_DB"),
 	}
 
 	fmt.Printf("Config loaded: %+v\n", config)
