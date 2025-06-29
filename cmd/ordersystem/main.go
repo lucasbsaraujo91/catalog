@@ -2,19 +2,22 @@ package main
 
 import (
 	"catalog/configs"
+	"catalog/internal/event/event"
+	"catalog/internal/event/handler"
 	"catalog/internal/infra/cache/redis"
 	"catalog/internal/infra/database"
+	"catalog/internal/infra/kafkahelper"
 	repo "catalog/internal/infra/repository/combonamerepo"
 	"catalog/internal/infra/web/handler/cachehandler"
-	handler "catalog/internal/infra/web/handler/combonamehandler"
+	combonamehandler "catalog/internal/infra/web/handler/combonamehandler"
 	"catalog/internal/infra/web/webserver"
-	service "catalog/internal/usecase/combonameusecase"
+	"catalog/internal/usecase/combonameusecase"
+	"catalog/pkg/events"
 	"log"
 	"net/http"
 )
 
 func main() {
-	// Carregar configs do ambiente
 	cfg, err := configs.LoadConfig()
 	if err != nil {
 		log.Fatal("Cannot load config:", err)
@@ -28,32 +31,37 @@ func main() {
 	)
 	defer redisClient.Client.Close()
 
-	// Conectar ao banco
 	db := database.NewPostgresConnection(cfg)
 	defer db.Close()
 
-	// Repository
+	kafkaBroker := cfg.KafkaBrokerAddress
+	if kafkaBroker == "" {
+		kafkaBroker = "kafka:9092"
+	}
+	kafkaWriter := kafkahelper.GetKafkaWriter(kafkaBroker, cfg.KafkaTopicComboName)
+	defer kafkaWriter.Close()
+
+	dispatcher := events.NewEventDispatcher()
+	comboEvent := event.NewComboNameCreatedEvent()
+	comboHandler := handler.NewComboNameCreatedHandler(kafkaWriter)
+
+	_ = dispatcher.Register(comboEvent.GetName(), comboHandler)
+
 	comboNameRepo := repo.NewPostgresRepository(db, redisClient)
+	comboNameService := combonameusecase.NewComboNameService(comboNameRepo, comboEvent, dispatcher)
 
-	// Service (Usecase)
-	comboNameService := service.NewComboNameService(comboNameRepo)
+	comboNameHandler := combonamehandler.NewWebComboNameHandler(comboNameService)
+	cacheHandler := cachehandler.NewWebCacheHandler(redisClient)
 
-	// Handler HTTP
-	comboNameHandler := handler.NewWebComboNameHandler(comboNameService)
-
-	// Criar servidor web
 	ws := webserver.NewWebServer(cfg.WebServerPort)
 
-	// Adicionar rota de teste
+	// Rotas
 	ws.AddHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	}))
-
 	ws.AddHandler("/combo-names", comboNameHandler.Routes())
-
-	cacheHandler := cachehandler.NewWebCacheHandler(redisClient)
 	ws.AddHandler("/limpa-cache", cacheHandler.Routes())
 
-	// Iniciar servidor
+	// Inicia servidor
 	ws.Start()
 }
