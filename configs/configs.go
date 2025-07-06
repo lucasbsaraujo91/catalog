@@ -22,6 +22,8 @@ type Config struct {
 	RedisDB             int    `mapstructure:"REDIS_DB"`
 	KafkaBrokerAddress  string `mapstructure:"KAFKA_BROKER_ADDRESS"`
 	KafkaTopicComboName string `mapstructure:"KAFKA_TOPIC"`
+	AuthUsername        string `mapstructure:"AUTH_USERNAME"`
+	AuthPassword        string `mapstructure:"AUTH_PASSWORD"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -43,6 +45,8 @@ func LoadConfig() (*Config, error) {
 		RedisDB:             viper.GetInt("REDIS_DB"),
 		KafkaBrokerAddress:  viper.GetString("KAFKA_BROKER_ADDRESS"),
 		KafkaTopicComboName: viper.GetString("KAFKA_TOPIC"),
+		AuthUsername:        viper.GetString("AUTH_USERNAME"),
+		AuthPassword:        viper.GetString("AUTH_PASSWORD"),
 	}
 
 	fmt.Printf("Config loaded: %+v\n", config)
