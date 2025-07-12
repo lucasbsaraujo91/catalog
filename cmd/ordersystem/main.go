@@ -18,9 +18,22 @@ import (
 	"log"
 	"net/http"
 
+	_ "catalog/internal/infra/web/docs"
+
 	"github.com/go-chi/chi/v5"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title Catálogo API
+// @version 1.0
+// @description API do sistema de catálogo com autenticação via token fixo.
+// @contact.name Lucas Batista
+// @contact.email lucas@email.com
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	// Carrega configurações
 	cfg, err := configs.LoadConfig()
@@ -66,6 +79,11 @@ func main() {
 	// Servidor web
 	ws := webserver.NewWebServer(cfg.WebServerPort)
 
+	// Rota pública de Swagger
+	swaggerRouter := chi.NewRouter()
+	swaggerRouter.Get("/*", httpSwagger.WrapHandler)
+	ws.AddHandler("/swagger", swaggerRouter)
+
 	// Rota pública
 	ws.AddHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
@@ -74,13 +92,13 @@ func main() {
 	// Rota pública de login
 	ws.AddHandler("/login", http.HandlerFunc(authhandler.LoginHandler))
 
-	// Rotas protegidas com JWT
+	// 🔐 Todas as rotas protegidas agora usam o token fixo
 	protected := chi.NewRouter()
-	protected.Use(webmiddleware.JWTAuthMiddleware)
+	protected.Use(webmiddleware.FixedTokenAuthMiddleware(cfg.FixedToken))
 	protected.Mount("/combo-names", comboNameHandler.Routes())
 	protected.Mount("/limpa-cache", cacheHandler.Routes())
 	ws.AddHandler("/", protected)
 
-	// Start server
+	// Inicia servidor
 	ws.Start()
 }

@@ -24,6 +24,7 @@ type Config struct {
 	KafkaTopicComboName string `mapstructure:"KAFKA_TOPIC"`
 	AuthUsername        string `mapstructure:"AUTH_USERNAME"`
 	AuthPassword        string `mapstructure:"AUTH_PASSWORD"`
+	FixedToken          string `mapstructure:"AUTH_FIXED_TOKEN"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -47,6 +48,7 @@ func LoadConfig() (*Config, error) {
 		KafkaTopicComboName: viper.GetString("KAFKA_TOPIC"),
 		AuthUsername:        viper.GetString("AUTH_USERNAME"),
 		AuthPassword:        viper.GetString("AUTH_PASSWORD"),
+		FixedToken:          viper.GetString("AUTH_FIXED_TOKEN"),
 	}
 
 	fmt.Printf("Config loaded: %+v\n", config)

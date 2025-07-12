@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"catalog/internal/usecase/combonameusecase"
-
 	comboname "catalog/internal/entity/comboname"
+	"catalog/internal/usecase/combonameusecase"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -23,6 +22,17 @@ func NewWebComboNameHandler(service *combonameusecase.ComboNameService) *WebComb
 	}
 }
 
+// GetByID retorna um combo pelo ID
+// @Summary Busca um ComboName pelo ID
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Produce json
+// @Param id path int true "ID do combo"
+// @Success 200 {object} ComboNameResponse
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "Not Found"
+// @Router /combo-names/{id} [get]
 func (h *WebComboNameHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	log.Printf("🟦 Handler → Received id param: %s", idStr)
@@ -51,16 +61,23 @@ func (h *WebComboNameHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(response)
 }
 
+// GetAll retorna todos os combos
+// @Summary Lista todos os ComboNames com paginação
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Produce json
+// @Param page query int false "Número da página" default(1)
+// @Param limit query int false "Limite de itens por página" default(10)
+// @Success 200 {object} PaginatedComboNameResponse
+// @Failure 401 {string} string "Unauthorized"
+// @Router /combo-names [get]
 func (h *WebComboNameHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	// Query Params
 	pageStr := r.URL.Query().Get("page")
 	limitStr := r.URL.Query().Get("limit")
-
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page <= 0 {
 		page = 1
 	}
-
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit <= 0 {
 		limit = 10
@@ -72,7 +89,6 @@ func (h *WebComboNameHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Monta resposta
 	var response []ComboNameResponse
 	for _, combo := range combos {
 		response = append(response, ComboNameResponse{
@@ -95,8 +111,19 @@ func (h *WebComboNameHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(paginated)
 }
 
+// Update atualiza um ComboName existente
+// @Summary Atualiza um ComboName existente
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Accept json
+// @Param id path int true "ID do combo"
+// @Param request body UpdateComboNameRequest true "Dados do combo"
+// @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /combo-names/{id} [put]
 func (h *WebComboNameHandler) Update(w http.ResponseWriter, r *http.Request) {
-	// Extrai o ID da rota
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -104,14 +131,12 @@ func (h *WebComboNameHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Faz o decode do JSON de entrada
 	var req UpdateComboNameRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Monta a entidade ComboName
 	combo := &comboname.ComboName{
 		ID:          id,
 		Name:        req.Name,
@@ -119,20 +144,29 @@ func (h *WebComboNameHandler) Update(w http.ResponseWriter, r *http.Request) {
 		IsAvailable: req.IsAvailable,
 	}
 
-	// Executa o update no usecase
 	err = h.ComboNameService.Update(r.Context(), combo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Retorna 204 No Content (atualização bem-sucedida)
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// Create cria um novo ComboName
+// @Summary Cria um novo ComboName
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param request body CreateComboNameRequest true "Dados do combo"
+// @Success 201 {object} CreateComboNameResponse
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /combo-names [post]
 func (h *WebComboNameHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req CreateComboNameRequest
-
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -157,6 +191,16 @@ func (h *WebComboNameHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// Disable desativa um ComboName pelo ID
+// @Summary Desativa (soft delete) um ComboName
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Param id path int true "ID do combo"
+// @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /combo-names/{id} [delete]
 func (h *WebComboNameHandler) Disable(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
@@ -171,5 +215,5 @@ func (h *WebComboNameHandler) Disable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent) // 204 No Content → sucesso sem body
+	w.WriteHeader(http.StatusNoContent)
 }

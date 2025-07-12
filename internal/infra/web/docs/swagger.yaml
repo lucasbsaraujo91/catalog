@@ -1,0 +1,261 @@
+basePath: /
+definitions:
+  combonamehandler.ComboNameResponse:
+    properties:
+      combo_name_uuid:
+        type: string
+      id:
+        type: integer
+      is_available:
+        type: boolean
+      name:
+        type: string
+      nickname:
+        type: string
+    type: object
+  combonamehandler.CreateComboNameRequest:
+    properties:
+      is_available:
+        type: boolean
+      name:
+        type: string
+      nickname:
+        type: string
+    type: object
+  combonamehandler.CreateComboNameResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  combonamehandler.PaginatedComboNameResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/combonamehandler.ComboNameResponse'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total_items:
+        type: integer
+    type: object
+  combonamehandler.UpdateComboNameRequest:
+    properties:
+      is_available:
+        type: boolean
+      name:
+        type: string
+      nickname:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: lucas@email.com
+    name: Lucas Batista
+  description: API do sistema de catálogo com autenticação via token fixo.
+  title: Catálogo API
+  version: "1.0"
+paths:
+  /combo-names:
+    get:
+      parameters:
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Limite de itens por página
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/combonamehandler.PaginatedComboNameResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Lista todos os ComboNames com paginação
+      tags:
+      - ComboNames
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do combo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/combonamehandler.CreateComboNameRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/combonamehandler.CreateComboNameResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um novo ComboName
+      tags:
+      - ComboNames
+  /combo-names/{id}:
+    delete:
+      parameters:
+      - description: ID do combo
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Desativa (soft delete) um ComboName
+      tags:
+      - ComboNames
+    get:
+      parameters:
+      - description: ID do combo
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/combonamehandler.ComboNameResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Busca um ComboName pelo ID
+      tags:
+      - ComboNames
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID do combo
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do combo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/combonamehandler.UpdateComboNameRequest'
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Atualiza um ComboName existente
+      tags:
+      - ComboNames
+  /limpa-cache:
+    delete:
+      parameters:
+      - description: Prefixo das chaves do Redis
+        in: query
+        name: prefix
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Limpa o cache com o prefixo especificado
+      tags:
+      - Cache
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

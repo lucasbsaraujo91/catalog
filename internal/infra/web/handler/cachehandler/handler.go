@@ -14,6 +14,17 @@ func NewWebCacheHandler(cache *redis.RedisCache) *WebCacheHandler {
 	return &WebCacheHandler{cache: cache}
 }
 
+// ClearCacheHandler limpa o cache com base no prefixo informado
+// @Summary Limpa o cache com o prefixo especificado
+// @Tags Cache
+// @Security ApiKeyAuth
+// @Produce json
+// @Param prefix query string true "Prefixo das chaves do Redis"
+// @Success 200 {object} map[string]string
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /limpa-cache [delete]
 func (h *WebCacheHandler) ClearCacheHandler(w http.ResponseWriter, r *http.Request) {
 	prefix := r.URL.Query().Get("prefix")
 	if prefix == "" {
