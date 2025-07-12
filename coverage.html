@@ -1,0 +1,1770 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>ordersystem: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">catalog/cmd/ordersystem/main.go (0.0%)</option>
+				
+				<option value="file1">catalog/configs/configs.go (0.0%)</option>
+				
+				<option value="file2">catalog/internal/entity/comboname/combo_name.go (33.3%)</option>
+				
+				<option value="file3">catalog/internal/event/event/comboname_created_event.go (0.0%)</option>
+				
+				<option value="file4">catalog/internal/event/handler/combo_name_created_handler.go (0.0%)</option>
+				
+				<option value="file5">catalog/internal/infra/cache/redis/client.go (0.0%)</option>
+				
+				<option value="file6">catalog/internal/infra/cache/redis/key.go (0.0%)</option>
+				
+				<option value="file7">catalog/internal/infra/database/db.go (0.0%)</option>
+				
+				<option value="file8">catalog/internal/infra/kafkahelper/writer.go (0.0%)</option>
+				
+				<option value="file9">catalog/internal/infra/repository/combonamerepo/repository_postgres.go (0.0%)</option>
+				
+				<option value="file10">catalog/internal/infra/web/docs/docs.go (0.0%)</option>
+				
+				<option value="file11">catalog/internal/infra/web/handler/authhandler/auth_handler.go (0.0%)</option>
+				
+				<option value="file12">catalog/internal/infra/web/handler/cachehandler/handler.go (0.0%)</option>
+				
+				<option value="file13">catalog/internal/infra/web/handler/cachehandler/route.go (0.0%)</option>
+				
+				<option value="file14">catalog/internal/infra/web/handler/combonamehandler/handler.go (0.0%)</option>
+				
+				<option value="file15">catalog/internal/infra/web/handler/combonamehandler/route.go (0.0%)</option>
+				
+				<option value="file16">catalog/internal/infra/web/middleware/fixed_token_middleware.go (0.0%)</option>
+				
+				<option value="file17">catalog/internal/infra/web/middleware/jwt_middleware.go (0.0%)</option>
+				
+				<option value="file18">catalog/internal/infra/web/webserver/webserver.go (0.0%)</option>
+				
+				<option value="file19">catalog/internal/usecase/combonameusecase/comboname_service.go (100.0%)</option>
+				
+				<option value="file20">catalog/pkg/auth/jwt.go (0.0%)</option>
+				
+				<option value="file21">catalog/pkg/events/base_event.go (0.0%)</option>
+				
+				<option value="file22">catalog/pkg/events/event_dispatcher.go (96.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "catalog/configs"
+        "catalog/internal/event/event"
+        "catalog/internal/event/handler"
+        "catalog/internal/infra/cache/redis"
+        "catalog/internal/infra/database"
+        "catalog/internal/infra/kafkahelper"
+        repo "catalog/internal/infra/repository/combonamerepo"
+        authhandler "catalog/internal/infra/web/handler/authhandler"
+        "catalog/internal/infra/web/handler/cachehandler"
+        combonamehandler "catalog/internal/infra/web/handler/combonamehandler"
+        webmiddleware "catalog/internal/infra/web/middleware"
+        "catalog/internal/infra/web/webserver"
+        "catalog/internal/usecase/combonameusecase"
+        "catalog/pkg/events"
+        "log"
+        "net/http"
+
+        _ "catalog/internal/infra/web/docs"
+
+        "github.com/go-chi/chi/v5"
+        httpSwagger "github.com/swaggo/http-swagger"
+)
+
+// @title Catálogo API
+// @version 1.0
+// @description API do sistema de catálogo com autenticação via token fixo.
+// @contact.name Lucas Batista
+// @contact.email lucas@email.com
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+func main() <span class="cov0" title="0">{
+        // Carrega configurações
+        cfg, err := configs.LoadConfig()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal("Cannot load config:", err)
+        }</span>
+
+        // Redis
+        <span class="cov0" title="0">redisClient := redis.NewRedisClient(
+                cfg.RedisHost,
+                cfg.RedisPort,
+                cfg.RedisPassword,
+                cfg.RedisDB,
+        )
+        defer redisClient.Client.Close()
+
+        // PostgreSQL
+        db := database.NewPostgresConnection(cfg)
+        defer db.Close()
+
+        // Kafka
+        kafkaBroker := cfg.KafkaBrokerAddress
+        if kafkaBroker == "" </span><span class="cov0" title="0">{
+                kafkaBroker = "kafka:9092"
+        }</span>
+        <span class="cov0" title="0">kafkaWriter := kafkahelper.GetKafkaWriter(kafkaBroker, cfg.KafkaTopicComboName)
+        defer kafkaWriter.Close()
+
+        // Dispatcher e eventos
+        dispatcher := events.NewEventDispatcher()
+        comboEvent := event.NewComboNameCreatedEvent()
+        comboHandler := handler.NewComboNameCreatedHandler(kafkaWriter)
+        _ = dispatcher.Register(comboEvent.GetName(), comboHandler)
+
+        // Repositório e serviço
+        comboNameRepo := repo.NewPostgresRepository(db, redisClient)
+        comboNameService := combonameusecase.NewComboNameService(comboNameRepo, comboEvent, dispatcher)
+
+        // Handlers HTTP
+        comboNameHandler := combonamehandler.NewWebComboNameHandler(comboNameService)
+        cacheHandler := cachehandler.NewWebCacheHandler(redisClient)
+
+        // Servidor web
+        ws := webserver.NewWebServer(cfg.WebServerPort)
+
+        // Rota pública de Swagger
+        swaggerRouter := chi.NewRouter()
+        swaggerRouter.Get("/*", httpSwagger.WrapHandler)
+        ws.AddHandler("/swagger", swaggerRouter)
+
+        // Rota pública
+        ws.AddHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                w.Write([]byte("pong"))
+        }</span>))
+
+        // Rota pública de login
+        <span class="cov0" title="0">ws.AddHandler("/login", http.HandlerFunc(authhandler.LoginHandler))
+
+        // 🔐 Todas as rotas protegidas agora usam o token fixo
+        protected := chi.NewRouter()
+        protected.Use(webmiddleware.FixedTokenAuthMiddleware(cfg.FixedToken))
+        protected.Mount("/combo-names", comboNameHandler.Routes())
+        protected.Mount("/limpa-cache", cacheHandler.Routes())
+        ws.AddHandler("/", protected)
+
+        // Inicia servidor
+        ws.Start()</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package configs
+
+import (
+        "fmt"
+
+        "github.com/spf13/viper"
+)
+
+type Config struct {
+        DBDriver            string `mapstructure:"DB_DRIVER"`
+        DBHost              string `mapstructure:"DB_HOST"`
+        DBPort              string `mapstructure:"DB_PORT"`
+        DBUser              string `mapstructure:"DB_USER"`
+        DBPassword          string `mapstructure:"DB_PASSWORD"`
+        DBName              string `mapstructure:"DB_NAME"`
+        WebServerPort       string `mapstructure:"WEB_SERVER_PORT"`
+        GRPCServerPort      string `mapstructure:"GRPC_SERVER_PORT"`
+        GraphQLServerPort   string `mapstructure:"GRAPHQL_SERVER_PORT"`
+        RedisHost           string `mapstructure:"REDIS_HOST"`
+        RedisPort           string `mapstructure:"REDIS_PORT"`
+        RedisPassword       string `mapstructure:"REDIS_PASSWORD"`
+        RedisDB             int    `mapstructure:"REDIS_DB"`
+        KafkaBrokerAddress  string `mapstructure:"KAFKA_BROKER_ADDRESS"`
+        KafkaTopicComboName string `mapstructure:"KAFKA_TOPIC"`
+        AuthUsername        string `mapstructure:"AUTH_USERNAME"`
+        AuthPassword        string `mapstructure:"AUTH_PASSWORD"`
+        FixedToken          string `mapstructure:"AUTH_FIXED_TOKEN"`
+}
+
+func LoadConfig() (*Config, error) <span class="cov0" title="0">{
+        viper.AutomaticEnv() // Pega variáveis de ambiente
+
+        config := &amp;Config{
+                DBDriver:            viper.GetString("DB_DRIVER"),
+                DBHost:              viper.GetString("DB_HOST"),
+                DBPort:              viper.GetString("DB_PORT"),
+                DBUser:              viper.GetString("DB_USER"),
+                DBPassword:          viper.GetString("DB_PASSWORD"),
+                DBName:              viper.GetString("DB_NAME"),
+                WebServerPort:       viper.GetString("WEB_SERVER_PORT"),
+                GRPCServerPort:      viper.GetString("GRPC_SERVER_PORT"),
+                GraphQLServerPort:   viper.GetString("GRAPHQL_SERVER_PORT"),
+                RedisHost:           viper.GetString("REDIS_HOST"),
+                RedisPort:           viper.GetString("REDIS_PORT"),
+                RedisPassword:       viper.GetString("REDIS_PASSWORD"),
+                RedisDB:             viper.GetInt("REDIS_DB"),
+                KafkaBrokerAddress:  viper.GetString("KAFKA_BROKER_ADDRESS"),
+                KafkaTopicComboName: viper.GetString("KAFKA_TOPIC"),
+                AuthUsername:        viper.GetString("AUTH_USERNAME"),
+                AuthPassword:        viper.GetString("AUTH_PASSWORD"),
+                FixedToken:          viper.GetString("AUTH_FIXED_TOKEN"),
+        }
+
+        fmt.Printf("Config loaded: %+v\n", config)
+
+        return config, nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package entity
+
+import "github.com/google/uuid"
+
+type ComboName struct {
+        ID            int64  `json:"id"`
+        Name          string `json:"name"`
+        ComboNameUuid string `json:"combo_name_uuid"`
+        Nickname      string `json:"nickname"`
+        IsAvailable   bool   `json:"is_available"`
+}
+
+// Enable ativa o combo
+func (c *ComboName) Enable() <span class="cov0" title="0">{
+        c.IsAvailable = true
+}</span>
+
+// Disable desativa o combo
+func (c *ComboName) Disable() <span class="cov0" title="0">{
+        c.IsAvailable = false
+}</span>
+
+// GenerateUUID gera e define um UUID único para o combo
+func (c *ComboName) GenerateUUID() <span class="cov8" title="1">{
+        c.ComboNameUuid = uuid.New().String()
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// internal/event/event/comboname_created_event.go
+package event
+
+import (
+        "catalog/pkg/events"
+        "time"
+)
+
+type ComboNameCreated struct {
+        Name     string
+        ID       int64
+        DateTime time.Time
+}
+
+func NewComboNameCreatedEvent() events.EventInterface <span class="cov0" title="0">{
+        return events.NewBaseEvent("ComboNameCreated", nil)
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package handler
+
+import (
+        "catalog/pkg/events"
+        "context"
+        "encoding/json"
+        "log"
+        "sync"
+
+        "github.com/segmentio/kafka-go"
+)
+
+type ComboNameCreatedHandler struct {
+        writer *kafka.Writer
+}
+
+func NewComboNameCreatedHandler(writer *kafka.Writer) *ComboNameCreatedHandler <span class="cov0" title="0">{
+        return &amp;ComboNameCreatedHandler{writer: writer}
+}</span>
+
+func (h *ComboNameCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) <span class="cov0" title="0">{
+        defer wg.Done()
+
+        jsonOutput, err := json.Marshal(event.GetPayload())
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Erro ao serializar payload: %v\n", err)
+                return
+        }</span>
+
+        <span class="cov0" title="0">msg := kafka.Message{
+                Key:   []byte("comboname"),
+                Value: jsonOutput,
+        }
+
+        err = h.writer.WriteMessages(context.Background(), msg)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Erro ao enviar mensagem para o Kafka: %v\n", err)
+        }</span> else<span class="cov0" title="0"> {
+                log.Println("✅ Mensagem enviada com sucesso para o Kafka")
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package redis
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/redis/go-redis/v9"
+)
+
+type RedisCache struct {
+        Client *redis.Client
+}
+
+func NewRedisClient(host string, port string, password string, db int) *RedisCache <span class="cov0" title="0">{
+        addr := fmt.Sprintf("%s:%s", host, port)
+        rdb := redis.NewClient(&amp;redis.Options{
+                Addr:     addr,
+                Password: password,
+                DB:       db,
+        })
+
+        return &amp;RedisCache{Client: rdb}
+}</span>
+
+func (r *RedisCache) Get(ctx context.Context, key string) (string, error) <span class="cov0" title="0">{
+        return r.Client.Get(ctx, key).Result()
+}</span>
+
+func (r *RedisCache) Set(ctx context.Context, key string, value string) error <span class="cov0" title="0">{
+        return r.Client.Set(ctx, key, value, 0).Err()
+}</span>
+
+func (r *RedisCache) Delete(ctx context.Context, key string) error <span class="cov0" title="0">{
+        return r.Client.Del(ctx, key).Err()
+}</span>
+
+func (r *RedisCache) DeleteByPrefix(ctx context.Context, prefix string) error <span class="cov0" title="0">{
+        iter := r.Client.Scan(ctx, 0, prefix+"*", 0).Iterator()
+        for iter.Next(ctx) </span><span class="cov0" title="0">{
+                if err := r.Client.Del(ctx, iter.Val()).Err(); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+        <span class="cov0" title="0">return iter.Err()</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package redis
+
+import (
+        "strings"
+)
+
+// Ex: BuildKey("comboname", "1") =&gt; combo:comboname:1
+func BuildKey(parts ...string) string <span class="cov0" title="0">{
+        return "combo:" + strings.Join(parts, ":")
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package database
+
+import (
+        "catalog/configs"
+        "database/sql"
+        "fmt"
+        "log"
+
+        _ "github.com/lib/pq"
+)
+
+func NewPostgresConnection(cfg *configs.Config) *sql.DB <span class="cov0" title="0">{
+        dsn := fmt.Sprintf(
+                "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+                cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
+        )
+
+        db, err := sql.Open(cfg.DBDriver, dsn)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Erro ao conectar no banco: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">err = db.Ping()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("Erro ao pingar no banco: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">log.Println("Conexão com banco de dados realizada com sucesso.")
+        return db</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package kafkahelper
+
+import "github.com/segmentio/kafka-go"
+
+func GetKafkaWriter(brokerAddress, topic string) *kafka.Writer <span class="cov0" title="0">{
+        return kafka.NewWriter(kafka.WriterConfig{
+                Brokers:  []string{brokerAddress},
+                Topic:    topic,
+                Balancer: &amp;kafka.LeastBytes{},
+        })
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package combonamerepo
+
+import (
+        "context"
+        "database/sql"
+        "encoding/json"
+        "fmt"
+
+        comboname "catalog/internal/entity/comboname"
+        "catalog/internal/infra/cache/redis"
+)
+
+type postgresRepository struct {
+        db    *sql.DB
+        cache *redis.RedisCache
+}
+
+func NewPostgresRepository(db *sql.DB, cache *redis.RedisCache) comboname.Repository <span class="cov0" title="0">{
+        return &amp;postgresRepository{
+                db:    db,
+                cache: cache,
+        }
+}</span>
+
+func (r *postgresRepository) GetByID(ctx context.Context, id int64) (*comboname.ComboName, error) <span class="cov0" title="0">{
+        cacheKey := redis.BuildKey("comboname", fmt.Sprint(id))
+
+        if cached, err := r.cache.Get(ctx, cacheKey); err == nil </span><span class="cov0" title="0">{
+                var combo comboname.ComboName
+                if err := json.Unmarshal([]byte(cached), &amp;combo); err == nil </span><span class="cov0" title="0">{
+                        return &amp;combo, nil
+                }</span>
+        }
+
+        <span class="cov0" title="0">query := `SELECT id, name, uuid, nickname, is_available FROM combo_names WHERE id = $1`
+        row := r.db.QueryRowContext(ctx, query, id)
+
+        var combo comboname.ComboName
+        err := row.Scan(&amp;combo.ID, &amp;combo.Name, &amp;combo.ComboNameUuid, &amp;combo.Nickname, &amp;combo.IsAvailable)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">data, _ := json.Marshal(combo)
+        _ = r.cache.Set(ctx, cacheKey, string(data))
+
+        return &amp;combo, nil</span>
+}
+
+func (r *postgresRepository) GetAll(ctx context.Context, page, limit int) ([]comboname.ComboName, int64, error) <span class="cov0" title="0">{
+        cacheKey := redis.BuildKey("comboname", "all", "page", fmt.Sprint(page), "limit", fmt.Sprint(limit))
+
+        if cached, err := r.cache.Get(ctx, cacheKey); err == nil </span><span class="cov0" title="0">{
+                var result struct {
+                        Combos []comboname.ComboName
+                        Total  int64
+                }
+                if err := json.Unmarshal([]byte(cached), &amp;result); err == nil </span><span class="cov0" title="0">{
+                        return result.Combos, result.Total, nil
+                }</span>
+        }
+
+        <span class="cov0" title="0">offset := (page - 1) * limit
+        query := `SELECT id, name, uuid, nickname, is_available FROM combo_names ORDER BY id LIMIT $1 OFFSET $2`
+        rows, err := r.db.QueryContext(ctx, query, limit, offset)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, err
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        var combos []comboname.ComboName
+        for rows.Next() </span><span class="cov0" title="0">{
+                var combo comboname.ComboName
+                if err := rows.Scan(&amp;combo.ID, &amp;combo.Name, &amp;combo.ComboNameUuid, &amp;combo.Nickname, &amp;combo.IsAvailable); err != nil </span><span class="cov0" title="0">{
+                        return nil, 0, err
+                }</span>
+                <span class="cov0" title="0">combos = append(combos, combo)</span>
+        }
+
+        <span class="cov0" title="0">var total int64
+        err = r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM combo_names`).Scan(&amp;total)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, err
+        }</span>
+
+        <span class="cov0" title="0">payload := struct {
+                Combos []comboname.ComboName
+                Total  int64
+        }{
+                Combos: combos,
+                Total:  total,
+        }
+        data, _ := json.Marshal(payload)
+        _ = r.cache.Set(ctx, cacheKey, string(data))
+
+        return combos, total, nil</span>
+}
+
+func (r *postgresRepository) Create(ctx context.Context, combo *comboname.ComboName) (int64, error) <span class="cov0" title="0">{
+        query := `INSERT INTO combo_names (name, uuid, nickname, is_available) VALUES ($1, $2, $3, $4) RETURNING id`
+        err := r.db.QueryRowContext(ctx, query, combo.Name, combo.ComboNameUuid, combo.Nickname, combo.IsAvailable).Scan(&amp;combo.ID)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">_ = r.cache.DeleteByPrefix(ctx, redis.BuildKey("comboname"))
+        return combo.ID, nil</span>
+}
+
+func (r *postgresRepository) Update(ctx context.Context, combo *comboname.ComboName) error <span class="cov0" title="0">{
+        query := `UPDATE combo_names SET name = $1, uuid = $2, nickname = $3, is_available = $4 WHERE id = $5`
+        _, err := r.db.ExecContext(ctx, query, combo.Name, combo.ComboNameUuid, combo.Nickname, combo.IsAvailable, combo.ID)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">_ = r.cache.DeleteByPrefix(ctx, redis.BuildKey("comboname"))
+        return nil</span>
+}
+
+func (r *postgresRepository) Disable(ctx context.Context, id int64) error <span class="cov0" title="0">{
+        query := `UPDATE combo_names SET is_available = false WHERE id = $1`
+        _, err := r.db.ExecContext(ctx, query, id)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">_ = r.cache.DeleteByPrefix(ctx, redis.BuildKey("comboname"))
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">// Package docs Code generated by swaggo/swag. DO NOT EDIT
+package docs
+
+import "github.com/swaggo/swag"
+
+const docTemplate = `{
+    "schemes": {{ marshal .Schemes }},
+    "swagger": "2.0",
+    "info": {
+        "description": "{{escape .Description}}",
+        "title": "{{.Title}}",
+        "contact": {
+            "name": "Lucas Batista",
+            "email": "lucas@email.com"
+        },
+        "version": "{{.Version}}"
+    },
+    "host": "{{.Host}}",
+    "basePath": "{{.BasePath}}",
+    "paths": {
+        "/combo-names": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ComboNames"
+                ],
+                "summary": "Lista todos os ComboNames com paginação",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limite de itens por página",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/combonamehandler.PaginatedComboNameResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ComboNames"
+                ],
+                "summary": "Cria um novo ComboName",
+                "parameters": [
+                    {
+                        "description": "Dados do combo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/combonamehandler.CreateComboNameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/combonamehandler.CreateComboNameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/combo-names/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ComboNames"
+                ],
+                "summary": "Busca um ComboName pelo ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do combo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/combonamehandler.ComboNameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ComboNames"
+                ],
+                "summary": "Atualiza um ComboName existente",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do combo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do combo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/combonamehandler.UpdateComboNameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "ComboNames"
+                ],
+                "summary": "Desativa (soft delete) um ComboName",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do combo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/limpa-cache": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Limpa o cache com o prefixo especificado",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Prefixo das chaves do Redis",
+                        "name": "prefix",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "combonamehandler.ComboNameResponse": {
+            "type": "object",
+            "properties": {
+                "combo_name_uuid": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_available": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                }
+            }
+        },
+        "combonamehandler.CreateComboNameRequest": {
+            "type": "object",
+            "properties": {
+                "is_available": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                }
+            }
+        },
+        "combonamehandler.CreateComboNameResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "combonamehandler.PaginatedComboNameResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/combonamehandler.ComboNameResponse"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                }
+            }
+        },
+        "combonamehandler.UpdateComboNameRequest": {
+            "type": "object",
+            "properties": {
+                "is_available": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}`
+
+// SwaggerInfo holds exported Swagger Info so clients can modify it
+var SwaggerInfo = &amp;swag.Spec{
+        Version:          "1.0",
+        Host:             "localhost:8080",
+        BasePath:         "/",
+        Schemes:          []string{},
+        Title:            "Catálogo API",
+        Description:      "API do sistema de catálogo com autenticação via token fixo.",
+        InfoInstanceName: "swagger",
+        SwaggerTemplate:  docTemplate,
+        LeftDelim:        "{{",
+        RightDelim:       "}}",
+}
+
+func init() <span class="cov0" title="0">{
+        swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package authhandler
+
+import (
+        "catalog/configs"
+        "catalog/pkg/auth"
+        "encoding/json"
+        "net/http"
+        "time"
+)
+
+type Credentials struct {
+        Username string `json:"username"`
+        Password string `json:"password"`
+}
+
+type AuthResponse struct {
+        Token string `json:"token"`
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        var creds Credentials
+
+        if err := json.NewDecoder(r.Body).Decode(&amp;creds); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+                return
+        }</span>
+
+        // Carrega as configs com usuário e senha do .env
+        <span class="cov0" title="0">cfg, err := configs.LoadConfig()
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "Erro ao carregar configurações", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">if creds.Username != cfg.AuthUsername || creds.Password != cfg.AuthPassword </span><span class="cov0" title="0">{
+                http.Error(w, "Usuário ou senha inválidos", http.StatusUnauthorized)
+                return
+        }</span>
+
+        <span class="cov0" title="0">token, err := auth.GenerateJWT(creds.Username, "user", time.Hour)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "Erro ao gerar token", http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(AuthResponse{Token: token})</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package cachehandler
+
+import (
+        "catalog/internal/infra/cache/redis"
+        "encoding/json"
+        "net/http"
+)
+
+type WebCacheHandler struct {
+        cache *redis.RedisCache
+}
+
+func NewWebCacheHandler(cache *redis.RedisCache) *WebCacheHandler <span class="cov0" title="0">{
+        return &amp;WebCacheHandler{cache: cache}
+}</span>
+
+// ClearCacheHandler limpa o cache com base no prefixo informado
+// @Summary Limpa o cache com o prefixo especificado
+// @Tags Cache
+// @Security ApiKeyAuth
+// @Produce json
+// @Param prefix query string true "Prefixo das chaves do Redis"
+// @Success 200 {object} map[string]string
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /limpa-cache [delete]
+func (h *WebCacheHandler) ClearCacheHandler(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        prefix := r.URL.Query().Get("prefix")
+        if prefix == "" </span><span class="cov0" title="0">{
+                http.Error(w, "prefix is required", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">if err := h.cache.DeleteByPrefix(r.Context(), prefix); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "failed to clear cache: "+err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">_ = json.NewEncoder(w).Encode(map[string]string{
+                "message": "cache cleared",
+                "prefix":  prefix,
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package cachehandler
+
+import (
+        "net/http"
+
+        "github.com/go-chi/chi/v5"
+)
+
+func (h *WebCacheHandler) Routes() http.Handler <span class="cov0" title="0">{
+        r := chi.NewRouter()
+        r.Post("/", h.ClearCacheHandler) // POST /limpa-cache?prefix=combo:
+        return r
+}</span>
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package combonamehandler
+
+import (
+        "encoding/json"
+        "log"
+        "net/http"
+        "strconv"
+
+        comboname "catalog/internal/entity/comboname"
+        "catalog/internal/usecase/combonameusecase"
+
+        "github.com/go-chi/chi/v5"
+)
+
+type WebComboNameHandler struct {
+        ComboNameService *combonameusecase.ComboNameService
+}
+
+func NewWebComboNameHandler(service *combonameusecase.ComboNameService) *WebComboNameHandler <span class="cov0" title="0">{
+        return &amp;WebComboNameHandler{
+                ComboNameService: service,
+        }
+}</span>
+
+// GetByID retorna um combo pelo ID
+// @Summary Busca um ComboName pelo ID
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Produce json
+// @Param id path int true "ID do combo"
+// @Success 200 {object} ComboNameResponse
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "Not Found"
+// @Router /combo-names/{id} [get]
+func (h *WebComboNameHandler) GetByID(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        idStr := chi.URLParam(r, "id")
+        log.Printf("🟦 Handler → Received id param: %s", idStr)
+        id, err := strconv.ParseInt(idStr, 10, 64)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Error parsing ID: %v | Raw value: %s", err, idStr)
+                http.Error(w, "invalid id", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">result, err := h.ComboNameService.GetByID(r.Context(), id)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov0" title="0">response := ComboNameResponse{
+                ID:            result.ID,
+                Name:          result.Name,
+                ComboNameUuid: result.ComboNameUuid,
+                Nickname:      result.Nickname,
+                IsAvailable:   result.IsAvailable,
+        }
+
+        w.Header().Set("Content-Type", "application/json")
+        _ = json.NewEncoder(w).Encode(response)</span>
+}
+
+// GetAll retorna todos os combos
+// @Summary Lista todos os ComboNames com paginação
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Produce json
+// @Param page query int false "Número da página" default(1)
+// @Param limit query int false "Limite de itens por página" default(10)
+// @Success 200 {object} PaginatedComboNameResponse
+// @Failure 401 {string} string "Unauthorized"
+// @Router /combo-names [get]
+func (h *WebComboNameHandler) GetAll(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        pageStr := r.URL.Query().Get("page")
+        limitStr := r.URL.Query().Get("limit")
+        page, err := strconv.Atoi(pageStr)
+        if err != nil || page &lt;= 0 </span><span class="cov0" title="0">{
+                page = 1
+        }</span>
+        <span class="cov0" title="0">limit, err := strconv.Atoi(limitStr)
+        if err != nil || limit &lt;= 0 </span><span class="cov0" title="0">{
+                limit = 10
+        }</span>
+
+        <span class="cov0" title="0">combos, total, err := h.ComboNameService.GetAll(r.Context(), page, limit)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">var response []ComboNameResponse
+        for _, combo := range combos </span><span class="cov0" title="0">{
+                response = append(response, ComboNameResponse{
+                        ID:            combo.ID,
+                        Name:          combo.Name,
+                        ComboNameUuid: combo.ComboNameUuid,
+                        Nickname:      combo.Nickname,
+                        IsAvailable:   combo.IsAvailable,
+                })
+        }</span>
+
+        <span class="cov0" title="0">paginated := PaginatedComboNameResponse{
+                Data:       response,
+                Page:       page,
+                Limit:      limit,
+                TotalItems: total,
+        }
+
+        w.Header().Set("Content-Type", "application/json")
+        _ = json.NewEncoder(w).Encode(paginated)</span>
+}
+
+// Update atualiza um ComboName existente
+// @Summary Atualiza um ComboName existente
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Accept json
+// @Param id path int true "ID do combo"
+// @Param request body UpdateComboNameRequest true "Dados do combo"
+// @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /combo-names/{id} [put]
+func (h *WebComboNameHandler) Update(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        idStr := chi.URLParam(r, "id")
+        id, err := strconv.ParseInt(idStr, 10, 64)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "invalid id", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">var req UpdateComboNameRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;req); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "invalid request body", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">combo := &amp;comboname.ComboName{
+                ID:          id,
+                Name:        req.Name,
+                Nickname:    req.Nickname,
+                IsAvailable: req.IsAvailable,
+        }
+
+        err = h.ComboNameService.Update(r.Context(), combo)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">w.WriteHeader(http.StatusNoContent)</span>
+}
+
+// Create cria um novo ComboName
+// @Summary Cria um novo ComboName
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param request body CreateComboNameRequest true "Dados do combo"
+// @Success 201 {object} CreateComboNameResponse
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /combo-names [post]
+func (h *WebComboNameHandler) Create(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        var req CreateComboNameRequest
+        if err := json.NewDecoder(r.Body).Decode(&amp;req); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "invalid request body", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">combo := &amp;comboname.ComboName{
+                Name:        req.Name,
+                Nickname:    req.Nickname,
+                IsAvailable: req.IsAvailable,
+        }
+
+        id, err := h.ComboNameService.Create(r.Context(), combo)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(http.StatusCreated)
+        _ = json.NewEncoder(w).Encode(CreateComboNameResponse{
+                ID: id,
+        })</span>
+}
+
+// Disable desativa um ComboName pelo ID
+// @Summary Desativa (soft delete) um ComboName
+// @Tags ComboNames
+// @Security ApiKeyAuth
+// @Param id path int true "ID do combo"
+// @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /combo-names/{id} [delete]
+func (h *WebComboNameHandler) Disable(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        idStr := chi.URLParam(r, "id")
+        id, err := strconv.ParseInt(idStr, 10, 64)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "invalid id", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">err = h.ComboNameService.Disable(r.Context(), id)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">w.WriteHeader(http.StatusNoContent)</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package combonamehandler
+
+import (
+        "net/http"
+
+        "github.com/go-chi/chi/v5"
+)
+
+func (h *WebComboNameHandler) Routes() http.Handler <span class="cov0" title="0">{
+        r := chi.NewRouter()
+        r.Get("/", h.GetAll)
+        r.Get("/{id}", h.GetByID)
+        r.Put("/{id}", h.Update)
+        r.Post("/", h.Create)
+        r.Delete("/{id}", h.Disable)
+        return r
+}</span>
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package middleware
+
+import (
+        "net/http"
+        "strings"
+)
+
+func FixedTokenAuthMiddleware(fixedToken string) func(http.Handler) http.Handler <span class="cov0" title="0">{
+        return func(next http.Handler) http.Handler </span><span class="cov0" title="0">{
+                return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                        authHeader := r.Header.Get("Authorization")
+                        if !strings.HasPrefix(authHeader, "Bearer ") </span><span class="cov0" title="0">{
+                                http.Error(w, "Unauthorized", http.StatusUnauthorized)
+                                return
+                        }</span>
+
+                        <span class="cov0" title="0">token := strings.TrimPrefix(authHeader, "Bearer ")
+                        if token != fixedToken </span><span class="cov0" title="0">{
+                                http.Error(w, "Unauthorized", http.StatusUnauthorized)
+                                return
+                        }</span>
+
+                        <span class="cov0" title="0">next.ServeHTTP(w, r)</span>
+                })
+        }
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package middleware
+
+import (
+        "catalog/pkg/auth"
+        "net/http"
+        "strings"
+)
+
+func JWTAuthMiddleware(next http.Handler) http.Handler <span class="cov0" title="0">{
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                authHeader := r.Header.Get("Authorization")
+                if authHeader == "" </span><span class="cov0" title="0">{
+                        http.Error(w, "Token não fornecido", http.StatusUnauthorized)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">parts := strings.Split(authHeader, " ")
+                if len(parts) != 2 || parts[0] != "Bearer" </span><span class="cov0" title="0">{
+                        http.Error(w, "Token inválido", http.StatusUnauthorized)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">token := parts[1]
+                _, err := auth.ValidateJWT(token)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, "Token inválido ou expirado", http.StatusUnauthorized)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">next.ServeHTTP(w, r)</span>
+        })
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package webserver
+
+import (
+        "log"
+        "net/http"
+        "time"
+
+        "github.com/go-chi/chi/middleware"
+        "github.com/go-chi/chi/v5"
+        "github.com/go-chi/cors"
+)
+
+type WebServer struct {
+        Router        chi.Router
+        Handlers      map[string]http.Handler
+        WebServerPort string
+}
+
+func NewWebServer(servePort string) *WebServer <span class="cov0" title="0">{
+        return &amp;WebServer{
+                Router:        chi.NewRouter(),
+                Handlers:      make(map[string]http.Handler),
+                WebServerPort: servePort,
+        }
+}</span>
+
+func (s *WebServer) AddHandler(path string, handler http.Handler) <span class="cov0" title="0">{
+        s.Handlers[path] = handler
+}</span>
+
+func (s *WebServer) Start() <span class="cov0" title="0">{
+        // Middlewares globais
+        s.Router.Use(
+                middleware.RequestID,
+                middleware.Logger,
+                middleware.Recoverer,
+                middleware.Timeout(60*time.Second),
+                cors.Handler(cors.Options{
+                        AllowedOrigins:   []string{"*"},
+                        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+                        AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+                        ExposedHeaders:   []string{"Link"},
+                        AllowCredentials: true,
+                        MaxAge:           300,
+                }),
+        )
+
+        for path, handler := range s.Handlers </span><span class="cov0" title="0">{
+                s.Router.Mount(path, handler)
+                log.Printf("Route mounted: %s", path)
+        }</span>
+
+        <span class="cov0" title="0">log.Printf("Server running on port %s", s.WebServerPort)
+        http.ListenAndServe(":"+s.WebServerPort, s.Router)</span>
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package combonameusecase
+
+import (
+        "context"
+        "errors"
+        "log"
+
+        comboname "catalog/internal/entity/comboname"
+        "catalog/pkg/events"
+)
+
+type ComboNameService struct {
+        repo       comboname.Repository
+        event      events.EventInterface
+        dispatcher events.EventDispatcherInterface
+}
+
+func NewComboNameService(r comboname.Repository, e events.EventInterface, d events.EventDispatcherInterface) *ComboNameService <span class="cov8" title="1">{
+        return &amp;ComboNameService{
+                repo:       r,
+                event:      e,
+                dispatcher: d,
+        }
+}</span>
+
+func (uc *ComboNameService) GetByID(ctx context.Context, id int64) (*comboname.ComboName, error) <span class="cov8" title="1">{
+        return uc.repo.GetByID(ctx, id)
+}</span>
+
+func (uc *ComboNameService) GetAll(ctx context.Context, page, limit int) ([]comboname.ComboName, int64, error) <span class="cov8" title="1">{
+        return uc.repo.GetAll(ctx, page, limit)
+}</span>
+
+func (uc *ComboNameService) Update(ctx context.Context, combo *comboname.ComboName) error <span class="cov8" title="1">{
+        return uc.repo.Update(ctx, combo)
+}</span>
+
+func (uc *ComboNameService) Create(ctx context.Context, combo *comboname.ComboName) (int64, error) <span class="cov8" title="1">{
+        // Validação mínima
+        if combo.Name == "" || combo.Nickname == "" </span><span class="cov8" title="1">{
+                return 0, errors.New("name and nickname are required")
+        }</span>
+
+        // Geração de UUID, se não vier preenchido
+        <span class="cov8" title="1">if combo.ComboNameUuid == "" </span><span class="cov8" title="1">{
+                combo.GenerateUUID()
+        }</span>
+
+        // Criação no repositório
+        <span class="cov8" title="1">id, err := uc.repo.Create(ctx, combo)
+        if err != nil </span><span class="cov8" title="1">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">combo.ID = id
+
+        // Disparo de evento com nome correto
+        if uc.dispatcher != nil </span><span class="cov8" title="1">{
+                event := events.NewBaseEvent("ComboNameCreated", combo)
+
+                log.Printf("🔔 Evento sendo despachado com payload: %+v\n", combo)
+
+                if err := uc.dispatcher.Dispatch(event); err != nil </span><span class="cov8" title="1">{
+                        log.Printf("❌ Erro ao despachar evento: %v\n", err)
+                }</span> else<span class="cov8" title="1"> {
+                        log.Println("✅ Evento despachado com sucesso")
+                }</span>
+        }
+
+        <span class="cov8" title="1">return id, nil</span>
+}
+
+func (uc *ComboNameService) Disable(ctx context.Context, id int64) error <span class="cov8" title="1">{
+        return uc.repo.Disable(ctx, id)
+}</span>
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package auth
+
+import (
+        "errors"
+        "time"
+
+        "github.com/golang-jwt/jwt/v5"
+)
+
+var jwtSecret = []byte("seu_segredo_super_secreto")
+
+// Gera um JWT para um usuário com login e role definidos
+func GenerateJWT(login string, role string, expiration time.Duration) (string, error) <span class="cov0" title="0">{
+        claims := jwt.MapClaims{
+                "login": login,
+                "role":  role,
+                "exp":   time.Now().Add(expiration).Unix(),
+        }
+
+        token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+        return token.SignedString(jwtSecret)
+}</span>
+
+// Valida o token JWT e retorna as claims
+func ValidateJWT(tokenString string) (jwt.MapClaims, error) <span class="cov0" title="0">{
+        token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) </span><span class="cov0" title="0">{
+                // Valida o algoritmo
+                if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok </span><span class="cov0" title="0">{
+                        return nil, errors.New("método de assinatura inválido")
+                }</span>
+                <span class="cov0" title="0">return jwtSecret, nil</span>
+        })
+
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // Extrai claims
+        <span class="cov0" title="0">if claims, ok := token.Claims.(jwt.MapClaims); ok &amp;&amp; token.Valid </span><span class="cov0" title="0">{
+                return claims, nil
+        }</span>
+
+        <span class="cov0" title="0">return nil, errors.New("token inválido")</span>
+}
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package events
+
+import "time"
+
+type BaseEvent struct {
+        Name     string
+        DateTime time.Time
+        Payload  interface{}
+}
+
+func NewBaseEvent(name string, payload interface{}) EventInterface <span class="cov0" title="0">{
+        return &amp;BaseEvent{
+                Name:     name,
+                DateTime: time.Now(),
+                Payload:  payload,
+        }
+}</span>
+
+func (e *BaseEvent) GetName() string <span class="cov0" title="0">{
+        return e.Name
+}</span>
+
+func (e *BaseEvent) GetDateTime() time.Time <span class="cov0" title="0">{
+        return e.DateTime
+}</span>
+
+func (e *BaseEvent) GetPayload() interface{} <span class="cov0" title="0">{
+        return e.Payload
+}</span>
+
+func (e *BaseEvent) SetPayload(payload interface{}) <span class="cov0" title="0">{
+        e.Payload = payload
+}</span>
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">package events
+
+import (
+        "errors"
+        "sync"
+)
+
+var ErrHandlerAlreadyRegistered = errors.New("handler already registered")
+
+type EventDispatcher struct {
+        handlers map[string][]EventHandlerInterface
+}
+
+func NewEventDispatcher() *EventDispatcher <span class="cov8" title="1">{
+        return &amp;EventDispatcher{
+                handlers: make(map[string][]EventHandlerInterface),
+        }
+}</span>
+
+func (ev *EventDispatcher) Dispatch(event EventInterface) error <span class="cov8" title="1">{
+        if handlers, ok := ev.handlers[event.GetName()]; ok </span><span class="cov8" title="1">{
+                wg := &amp;sync.WaitGroup{}
+                for _, handler := range handlers </span><span class="cov8" title="1">{
+                        wg.Add(1)
+                        go handler.Handle(event, wg)
+                }</span>
+                <span class="cov8" title="1">wg.Wait()</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (ed *EventDispatcher) Register(eventName string, handler EventHandlerInterface) error <span class="cov8" title="1">{
+        if _, ok := ed.handlers[eventName]; ok </span><span class="cov8" title="1">{
+                for _, h := range ed.handlers[eventName] </span><span class="cov8" title="1">{
+                        if h == handler </span><span class="cov8" title="1">{
+                                return ErrHandlerAlreadyRegistered
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">ed.handlers[eventName] = append(ed.handlers[eventName], handler)
+        return nil</span>
+}
+
+func (ed *EventDispatcher) Has(eventName string, handler EventHandlerInterface) bool <span class="cov8" title="1">{
+        if _, ok := ed.handlers[eventName]; ok </span><span class="cov8" title="1">{
+                for _, h := range ed.handlers[eventName] </span><span class="cov8" title="1">{
+                        if h == handler </span><span class="cov8" title="1">{
+                                return true
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+func (ed *EventDispatcher) Remove(eventName string, handler EventHandlerInterface) error <span class="cov8" title="1">{
+        if _, ok := ed.handlers[eventName]; ok </span><span class="cov8" title="1">{
+                for i, h := range ed.handlers[eventName] </span><span class="cov8" title="1">{
+                        if h == handler </span><span class="cov8" title="1">{
+                                ed.handlers[eventName] = append(ed.handlers[eventName][:i], ed.handlers[eventName][i+1:]...)
+                                return nil
+                        }</span>
+                }
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (ed *EventDispatcher) Clear() <span class="cov8" title="1">{
+        ed.handlers = make(map[string][]EventHandlerInterface)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

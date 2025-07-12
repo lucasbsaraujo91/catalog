@@ -1,0 +1,15 @@
+✅ 1. Gerar cobertura de TODOS os pacotes
+
+go test -coverprofile=coverage.out ./...
+
+    Isso executa os testes em todos os pacotes do seu projeto e salva o resultado em coverage.out.
+
+✅ 2. Gerar o relatório HTML
+
+go tool cover -html=coverage.out -o coverage.html
+
+✅ 3. Abrir no navegador
+
+    No Linux:
+
+xdg-open coverage.html

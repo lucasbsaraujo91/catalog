@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/google/uuid"
+
 type ComboName struct {
 	ID            int64  `json:"id"`
 	Name          string `json:"name"`
@@ -16,4 +18,9 @@ func (c *ComboName) Enable() {
 // Disable desativa o combo
 func (c *ComboName) Disable() {
 	c.IsAvailable = false
+}
+
+// GenerateUUID gera e define um UUID único para o combo
+func (c *ComboName) GenerateUUID() {
+	c.ComboNameUuid = uuid.New().String()
 }

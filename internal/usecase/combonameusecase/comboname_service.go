@@ -2,6 +2,7 @@ package combonameusecase
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	comboname "catalog/internal/entity/comboname"
@@ -35,21 +36,34 @@ func (uc *ComboNameService) Update(ctx context.Context, combo *comboname.ComboNa
 }
 
 func (uc *ComboNameService) Create(ctx context.Context, combo *comboname.ComboName) (int64, error) {
+	// Validação mínima
+	if combo.Name == "" || combo.Nickname == "" {
+		return 0, errors.New("name and nickname are required")
+	}
+
+	// Geração de UUID, se não vier preenchido
+	if combo.ComboNameUuid == "" {
+		combo.GenerateUUID()
+	}
+
+	// Criação no repositório
 	id, err := uc.repo.Create(ctx, combo)
 	if err != nil {
 		return 0, err
 	}
-
 	combo.ID = id
 
-	uc.event.SetPayload(combo)
+	// Disparo de evento com nome correto
+	if uc.dispatcher != nil {
+		event := events.NewBaseEvent("ComboNameCreated", combo)
 
-	log.Printf("Evento sendo despachado com payload: %+v\n", combo)
+		log.Printf("🔔 Evento sendo despachado com payload: %+v\n", combo)
 
-	if err := uc.dispatcher.Dispatch(uc.event); err != nil {
-		log.Printf("Erro ao despachar evento: %v\n", err)
-	} else {
-		log.Println("Evento despachado com sucesso")
+		if err := uc.dispatcher.Dispatch(event); err != nil {
+			log.Printf("❌ Erro ao despachar evento: %v\n", err)
+		} else {
+			log.Println("✅ Evento despachado com sucesso")
+		}
 	}
 
 	return id, nil
