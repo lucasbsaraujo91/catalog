@@ -8,9 +8,9 @@ import (
 	"catalog/internal/infra/database"
 	"catalog/internal/infra/kafkahelper"
 	repo "catalog/internal/infra/repository/combonamerepo"
-	authhandler "catalog/internal/infra/web/handler/authhandler"
-	"catalog/internal/infra/web/handler/cachehandler"
-	combonamehandler "catalog/internal/infra/web/handler/combonamehandler"
+	authhandler "catalog/internal/infra/web/handler/v1/authhandler"
+	"catalog/internal/infra/web/handler/v1/cachehandler"
+	combonamehandler "catalog/internal/infra/web/handler/v1/combonamehandler"
 	webmiddleware "catalog/internal/infra/web/middleware"
 	"catalog/internal/infra/web/webserver"
 	"catalog/internal/usecase/combonameusecase"
@@ -95,8 +95,8 @@ func main() {
 	// 🔐 Todas as rotas protegidas agora usam o token fixo
 	protected := chi.NewRouter()
 	protected.Use(webmiddleware.FixedTokenAuthMiddleware(cfg.FixedToken))
-	protected.Mount("/combo-names", comboNameHandler.Routes())
-	protected.Mount("/limpa-cache", cacheHandler.Routes())
+	protected.Mount("/v1/combo-names", comboNameHandler.Routes())
+	protected.Mount("/v1/limpa-cache", cacheHandler.Routes())
 	ws.AddHandler("/", protected)
 
 	// Inicia servidor
