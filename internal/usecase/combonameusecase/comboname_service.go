@@ -9,6 +9,14 @@ import (
 	"catalog/pkg/events"
 )
 
+type ComboNameServiceInterface interface {
+	GetByID(ctx context.Context, id int64) (*comboname.ComboName, error)
+	GetAll(ctx context.Context, page, limit int) ([]comboname.ComboName, int64, error)
+	Update(ctx context.Context, combo *comboname.ComboName) error
+	Create(ctx context.Context, combo *comboname.ComboName) (int64, error)
+	Disable(ctx context.Context, id int64) error
+}
+
 type ComboNameService struct {
 	repo       comboname.Repository
 	event      events.EventInterface
@@ -36,33 +44,29 @@ func (uc *ComboNameService) Update(ctx context.Context, combo *comboname.ComboNa
 }
 
 func (uc *ComboNameService) Create(ctx context.Context, combo *comboname.ComboName) (int64, error) {
-	// Validação mínima
 	if combo.Name == "" || combo.Nickname == "" {
 		return 0, errors.New("name and nickname are required")
 	}
 
-	// Geração de UUID, se não vier preenchido
 	if combo.ComboNameUuid == "" {
 		combo.GenerateUUID()
 	}
 
-	// Criação no repositório
 	id, err := uc.repo.Create(ctx, combo)
 	if err != nil {
 		return 0, err
 	}
 	combo.ID = id
 
-	// Disparo de evento com nome correto
 	if uc.dispatcher != nil {
 		event := events.NewBaseEvent("ComboNameCreated", combo)
 
-		log.Printf("🔔 Evento sendo despachado com payload: %+v\n", combo)
+		log.Printf("Evento sendo despachado com payload: %+v\n", combo)
 
 		if err := uc.dispatcher.Dispatch(event); err != nil {
-			log.Printf("❌ Erro ao despachar evento: %v\n", err)
+			log.Printf("Erro ao despachar evento: %v\n", err)
 		} else {
-			log.Println("✅ Evento despachado com sucesso")
+			log.Println("Evento despachado com sucesso")
 		}
 	}
 

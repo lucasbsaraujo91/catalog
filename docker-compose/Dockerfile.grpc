@@ -1,0 +1,13 @@
+# Dockerfile para o gRPC Server
+# Dockerfile-grpcserver
+FROM golang:1.23 AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o grpcserver ./cmd/grpcserver
+
+FROM debian:bookworm-slim
+COPY --from=builder /app/grpcserver /usr/local/bin/
+EXPOSE 50051
+ENTRYPOINT ["grpcserver"]

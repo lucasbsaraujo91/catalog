@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package comboname;
+
+option go_package = "catalog/internal/infra/grpc/pb;comboname";
+
+// Serviço para operações com ComboName
+service ComboNameService {
+  rpc GetByID(GetByIDRequest) returns (ComboNameResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
+  rpc Create(CreateComboNameRequest) returns (ComboNameResponse);
+  rpc Update(UpdateComboNameRequest) returns (ComboNameResponse);
+  rpc Disable(DisableComboNameRequest) returns (DisableResponse);
+}
+
+// Mensagens
+
+message GetByIDRequest {
+  int64 id = 1;
+}
+
+message GetAllRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message CreateComboNameRequest {
+  string name = 1;
+  string nickname = 2;
+}
+
+message UpdateComboNameRequest {
+  int64 id = 1;
+  string name = 2;
+  string nickname = 3;
+}
+
+message DisableComboNameRequest {
+  int64 id = 1;
+}
+
+message ComboNameResponse {
+  int64 id = 1;
+  string name = 2;
+  string nickname = 3;
+  string combo_name_uuid = 4;
+  bool is_available = 5;
+}
+
+message GetAllResponse {
+  repeated ComboNameResponse combos = 1;
+  int64 total = 2;
+}
+
+message DisableResponse {
+  bool success = 1;
+}
